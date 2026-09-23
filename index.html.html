@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PacePlan</title>
+<style>
+:root{--blue:#287dc2;--green:#278f67;--ink:#173449;--muted:#617889;--line:#d4e3eb;--bg:#f2faff;--bad:#a61b13;--warn:#966000;--good:#16734a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(135deg,#edf8ff,#f1fff7);color:var(--ink)}button,input,select{font:inherit}.wrap{max-width:1100px;margin:auto;padding:18px}.hero{display:flex;gap:12px;align-items:center;margin-bottom:18px}.logo{width:50px;height:50px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,var(--blue),var(--green));font-size:26px}.card,.week{background:white;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 12px 30px rgba(32,74,104,.1)}h1,h2,h3{margin-top:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label,.label{font-weight:750;display:block;margin-bottom:6px}select,input{width:100%;min-height:44px;padding:10px;border:1px solid #bdd1dd;border-radius:10px}.time{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.days{display:flex;flex-wrap:wrap;gap:7px}.days label{border:1px solid var(--line);border-radius:999px;padding:10px 13px;background:#fff}.days input{width:auto;min-height:auto}.status{margin-top:9px;padding:10px;border-radius:10px;font-weight:700}.valid{background:#e8f8ef;color:var(--good)}.warning{background:#fff6dc;color:var(--warn)}.invalid{background:#ffefed;color:var(--bad)}.hidden{display:none!important}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,var(--blue),var(--green));color:white}.secondary{background:#eaf4f8;color:var(--ink)}.summary{background:linear-gradient(135deg,#e7f3ff,#e7f8ee);margin-bottom:14px}.paces{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.pace{border:1px solid var(--line);border-radius:11px;padding:10px}.pace b{display:block;font-size:12px;color:var(--muted)}.calendar{display:grid;gap:12px;margin-top:14px}.week{padding:0;overflow:hidden}.week-head{padding:13px 15px;background:#edf7f5;display:flex;justify-content:space-between}.workouts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px}.workout{position:relative;border:1px solid var(--line);border-radius:12px;padding:12px}.workout.done{background:#eaf8ef}.check{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:50%;border:2px solid #92aaba;background:white}.meta{font-size:12px;color:var(--muted);font-weight:700}.part{margin-top:8px}.part b{display:block;font-size:11px;text-transform:uppercase;color:var(--muted)}.progress{height:10px;background:#dce8ed;border-radius:99px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));width:0}.recovery{background:#f7fafb;border-style:dashed}@media(max-width:760px){.grid,.time,.paces,.workouts{grid-template-columns:1fr}.actions .btn{width:100%}}@media print{.no-print,.check,.hero{display:none!important}.week{break-inside:avoid;box-shadow:none}.workouts{grid-template-columns:repeat(2,1fr)}body{background:white}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero"><div class="logo">🏃</div><div><h1>PacePlan</h1><div>Personalised, week-by-week running programmes</div></div></header>
+<section id="formView" class="card">
+<form id="planForm">
+<div class="grid">
+<div><label for="goal">Goal race</label><select id="goal"><option value="5">5 km</option><option value="10">10 km</option><option value="21.0975" selected>Half Marathon</option><option value="42.195">Marathon</option></select></div>
+<div><label for="weeks">Programme length</label><select id="weeks"><option>8</option><option>10</option><option selected>12</option><option>14</option><option>16</option></select></div>
+<div><label for="frequency">Running days per week</label><select id="frequency"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></div>
+<div><label for="longDay">Long-run day</label><select id="longDay"><option value="6" selected>Saturday</option><option value="0">Sunday</option></select></div>
+<div><label for="unit">Units</label><select id="unit"><option value="km">Kilometres</option><option value="mi">Miles</option></select></div>
+<div class="full"><span class="label">Training days</span><div id="trainingDays" class="days"></div></div>
+<div class="full"><span class="label">Recent race result</span><select id="recentDistance"><option value="">No recent result</option><option value="5" selected>5 km</option><option value="10">10 km</option><option value="21.0975">Half Marathon</option></select><div class="time"><label>Hours<input id="recentHours" type="number" inputmode="numeric" min="0" value="0"></label><label>Minutes<input id="recentMinutes" type="number" inputmode="numeric" min="0" max="59" value="24"></label><label>Seconds<input id="recentSeconds" type="number" inputmode="numeric" min="0" max="59" value="30"></label></div><div id="recentStatus" class="status hidden"></div></div>
+</div>
+<div id="formError" class="status invalid hidden"></div>
+<div class="actions"><button class="btn primary" type="submit">Generate My Programme</button></div>
+</form>
+</section>
+<section id="resultsView" class="hidden">
+<div class="card summary"><h2 id="title"></h2><p id="summary"></p><div class="progress"><div id="bar" class="bar"></div></div><p id="progressText"></p></div>
+<div class="card"><h3>Training paces</h3><div id="paces" class="paces"></div></div>
+<div id="calendar" class="calendar"></div>
+<div class="actions no-print"><button id="saveBtn" class="btn primary">Save</button><button id="editBtn" class="btn secondary">Edit inputs</button><button id="printBtn" class="btn secondary">Print / Save PDF</button><button id="deleteBtn" class="btn secondary">Delete saved plan</button></div>
+</section>
+</main>
+<script>
+'use strict';
+const $ = selector => document.querySelector(selector);
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const GOAL_NAMES = {5:'5 km',10:'10 km','21.0975':'Half Marathon','42.195':'Marathon'};
+const RANGE = {5:[720,900,3600,7200],10:[1500,1800,7200,10800],21.0975:[3300,3600,14400,21600]};
+let plan = null;
+function addDays(date,count){const copy=new Date(date);copy.setDate(copy.getDate()+count);return copy;}
+function iso(date){const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,'0'),d=String(date.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+function dateLabel(date){return new Intl.DateTimeFormat('en-AU',{weekday:'long',day:'numeric',month:'short',year:'numeric'}).format(date);}
+function formatTime(seconds){seconds=Math.round(seconds);const h=Math.floor(seconds/3600),m=Math.floor(seconds%3600/60),s=seconds%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`;}
+function readTime(prefix,optional=false){let values=['Hours','Minutes','Seconds'].map(part=>$('#'+prefix+part).value);if(optional&&values.every(v=>v===''))return null;if(values.some(v=>v===''))throw new Error('Complete all hours, minutes and seconds fields.');values=values.map(Number);if(values.some(v=>!Number.isInteger(v)||v<0)||values[1]>59||values[2]>59)throw new Error('Minutes and seconds must be between 0 and 59.');const total=values[0]*3600+values[1]*60+values[2];if(total===0)throw new Error('Time must be greater than zero.');return total;}
+function validateRecent(){const distance=Number($('#recentDistance').value),box=$('#recentStatus');if(!distance){box.className='status hidden';return null;}try{const total=readTime('recent'),r=RANGE[distance];const status=total<r[0]||total>r[3]?'invalid':total<r[1]||total>r[2]?'warning':'valid';box.className='status '+status;box.textContent=status==='valid'?'✓ Valid result':status==='warning'?'⚠ Unusual result; please verify':'✕ Time is outside the accepted range';return {total,status};}catch(error){box.className='status invalid';box.textContent='✕ '+error.message;return {status:'invalid'};}}
+function defaultDays(){const frequency=Number($('#frequency').value),longDay=Number($('#longDay').value);let picks=frequency===2?[2,longDay]:frequency===3?[2,4,longDay]:frequency===4?[1,3,5,longDay]:frequency===5?[1,2,4,5,longDay]:[1,2,3,4,5,longDay];picks=[...new Set(picks)];for(let day=0;picks.length<frequency;day++)if(!picks.includes(day))picks.push(day);$('#trainingDays').innerHTML=DAY_NAMES.map((name,day)=>`<label><input name="trainingDay" type="checkbox" value="${day}" ${picks.includes(day)?'checked':''}> ${name}</label>`).join('');}
+function sessionTypes(frequency){return {2:['Easy Run','Long Run'],3:['Easy Run','Intervals','Long Run'],4:['Easy Run','Intervals','Tempo Run','Long Run'],5:['Recovery Run','Easy Run','Intervals','Tempo Run','Long Run'],6:['Recovery Run','Easy Run','Intervals','Easy Run','Tempo Run','Long Run']}[frequency];}
+function createPlan(){
+  const recent=validateRecent();
+  if(recent&&recent.status==='invalid')throw new Error('Correct the recent race time.');
+  const selected=[...document.querySelectorAll('[name=trainingDay]:checked')].map(x=>Number(x.value));
+  const frequency=Number($('#frequency').value),longDay=Number($('#longDay').value);
+  if(selected.length!==frequency)throw new Error(`Choose exactly ${frequency} training days.`);
+  if(!selected.includes(longDay))throw new Error('The long-run day must be selected as a training day.');
+  const goal=Number($('#goal').value),weeks=Number($('#weeks').value),unit=$('#unit').value;
+  const recentDistance=Number($('#recentDistance').value);
+  const basePace=recent?recent.total/recentDistance:390;
+  const predicted=recent?recent.total*Math.pow(goal/recentDistance,1.06):basePace*goal;
+  const paceMultiplier=unit==='mi'?1.609344:1;
+  const paceDefs=[['Recovery',basePace*1.34],['Easy',basePace*1.22],['Long',basePace*1.28],['Tempo',basePace*1.06],['Intervals',basePace*.93],['Goal race',predicted/goal]];
+  const calendar=[];
+  for(let week=1;week<=weeks;week++){
+    const ordered=[...selected].sort((x,y)=>x-y);
+    const items=sessionTypes(frequency).map((type,index)=>{
+      const day=type==='Long Run'?longDay:ordered[index];
+      const paceIndex=type==='Recovery Run'?0:type==='Long Run'?2:type==='Tempo Run'?3:type==='Intervals'?4:1;
+      const main=type==='Intervals'?`${4+Math.floor(week/2)} controlled repetitions with easy recovery.`:type==='Tempo Run'?`${10+week} minutes at comfortably hard effort.`:type==='Long Run'?'Comfortable long run, progressing gradually through the programme.':type==='Recovery Run'?'Very easy running or run/walk.':'Conversational easy running.';
+      return {id:`w${week}-${index}`,type,day:DAY_NAMES[day],pace:formatTime(paceDefs[paceIndex][1]*paceMultiplier)+' /'+unit,main};
+    });
+    if(week===weeks)items.push({id:'race',type:'Race Day',day:'Choose your race day',pace:formatTime(predicted/goal*paceMultiplier)+' /'+unit,main:'Start controlled and build your effort gradually.'});
+    const phase=week===weeks?'Race Week':week>=weeks-1?'Taper':week>weeks*.65?'Peak':week>weeks*.3?'Build':'Base';
+    calendar.push({week,phase,items});
+  }
+  return {goal,weeks,frequency,longDay,selected,unit,predicted,paceDefs,paceMultiplier,calendar,done:[]};
+}
+function workoutCard(item){const done=plan.done.includes(item.id);return `<article class="workout ${done?'done':''}" data-id="${item.id}"><button class="check" type="button" aria-label="Toggle completion">${done?'✓':''}</button><h3>${item.type}</h3><div class="meta">${item.day}<br>${item.pace}</div><div class="part"><b>Warm-up</b>5–10 min easy movement and mobility.</div><div class="part"><b>Main</b>${item.main}</div><div class="part"><b>Cool-down</b>5–10 min easy walking or jogging.</div></article>`;}
+function savePlan(){localStorage.setItem('paceplan-corrected',JSON.stringify(plan));}
+function renderPlan(){if(!plan)return;$('#formView').classList.add('hidden');$('#resultsView').classList.remove('hidden');$('#title').textContent=`Your ${plan.weeks}-week ${GOAL_NAMES[plan.goal]} programme`;$('#summary').textContent=`${plan.frequency} runs each week. Generated goal time: ${formatTime(plan.predicted)}.`;$('#paces').innerHTML=plan.paceDefs.map(([name,value])=>`<div class="pace"><b>${name}</b>${formatTime(value*plan.paceMultiplier)} /${plan.unit}</div>`).join('');$('#calendar').innerHTML=plan.calendar.map(week=>`<section class="week"><div class="week-head"><strong>${week.phase==='Race Week'?'Race Week':'Week '+week.week}</strong><span>${week.phase}</span></div><div class="workouts">${week.items.map(workoutCard).join('')}<article class="workout recovery"><h3>Rest & Recovery</h3><div class="part"><b>Guidance</b>Prioritise sleep, hydration, gentle walking and optional mobility.</div><div class="part"><b>Safety</b>Reduce training if pain or unusual fatigue develops.</div></article></div></section>`).join('');document.querySelectorAll('.check').forEach(button=>button.addEventListener('click',()=>{const id=button.closest('.workout').dataset.id,index=plan.done.indexOf(id);index<0?plan.done.push(id):plan.done.splice(index,1);savePlan();renderPlan();}));const total=plan.calendar.reduce((sum,week)=>sum+week.items.length,0),percent=Math.round(plan.done.length/total*100);$('#bar').style.width=percent+'%';$('#progressText').textContent=`${plan.done.length} of ${total} workouts completed (${percent}%)`;window.scrollTo({top:0,behavior:'smooth'});}
+$('#planForm').addEventListener('submit',event=>{event.preventDefault();const errorBox=$('#formError');errorBox.className='status hidden';try{plan=createPlan();savePlan();renderPlan();}catch(error){errorBox.textContent='✕ '+error.message;errorBox.className='status invalid';}});
+$('#frequency').addEventListener('change',defaultDays);$('#longDay').addEventListener('change',defaultDays);['recentDistance','recentHours','recentMinutes','recentSeconds'].forEach(id=>$('#'+id).addEventListener('input',validateRecent));$('#saveBtn').addEventListener('click',savePlan);$('#editBtn').addEventListener('click',()=>{$('#resultsView').classList.add('hidden');$('#formView').classList.remove('hidden');});$('#printBtn').addEventListener('click',()=>window.print());$('#deleteBtn').addEventListener('click',()=>{localStorage.removeItem('paceplan-corrected');location.reload();});
+defaultDays();validateRecent();try{plan=JSON.parse(localStorage.getItem('paceplan-corrected'));if(plan)renderPlan();}catch{localStorage.removeItem('paceplan-corrected');}
+</script>
+</body>
+</html>
